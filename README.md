@@ -20,7 +20,7 @@
 [Follow the full flow](#-end-to-end-program-flow) •
 [View the UML](#-uml-class-diagram) •
 [Run the project](#-getting-started) •
-[Prepare for viva](#-viva-quick-reference)
+
 
 </div>
 
@@ -583,64 +583,6 @@ manager.updateComplaintStatus(6001L, ComplaintStatus.RESOLVED);
 complaint.setResolutionDeadline(LocalDateTime.now().minusMinutes(1));
 ComplaintProcessingChain.checkEscalation(complaint);
 ```
-
----
-
-## 🎓 Viva quick reference
-
-| Pattern | One-line answer | Evidence in the project |
-|---|---|---|
-| Factory | Creates one appropriate object without exposing its concrete construction to the client. | `CivicComplaintFactory` creates a complaint from `ComplaintType`. |
-| Abstract Factory | Creates a family of related objects. | Each department factory creates its matching `Team` and `Service`. |
-| Chain of Responsibility | Passes a request through ordered handlers with separate responsibilities. | Six handlers process each accepted complaint. |
-| Observer | Automatically informs multiple subscribers when state changes. | `ComplaintSubject` updates citizen, admin, and team observers. |
-| Bridge | Separates an abstraction from its implementation. | Notification purpose and sender channel vary independently. |
-| Singleton | Guarantees one shared instance. | `IncidentManager.getInstance()` always returns the same manager. |
-
-### Common viva questions
-
-<details>
-<summary><strong>What is the difference between Factory and Abstract Factory here?</strong></summary>
-
-Factory creates **one complaint object**. Abstract Factory creates a **related pair
-of products**—the department team and department service.
-
-</details>
-
-<details>
-<summary><strong>How do Observer and Bridge work together?</strong></summary>
-
-Observer determines **when and who to notify** after a status change. Bridge
-determines **what notification abstraction and delivery channel** carry that
-message.
-
-</details>
-
-<details>
-<summary><strong>Where is a complaint registered?</strong></summary>
-
-After validation succeeds, `DuplicateCheckHandler` checks the Singleton
-`IncidentManager`. If the complaint is not a duplicate, that same handler registers
-it before continuing the chain.
-
-</details>
-
-<details>
-<summary><strong>Why can the chain stop early?</strong></summary>
-
-An invalid or duplicate complaint should not receive severity analysis, department
-routing, or team assignment. Its handler therefore does not call the next handler.
-
-</details>
-
-<details>
-<summary><strong>What happens when status changes?</strong></summary>
-
-`Complaint.setStatus()` asks `ComplaintSubject` to notify all observers. Each
-observer uses its configured Bridge notification to send the update through SMS,
-email, or push.
-
-</details>
 
 ---
 
